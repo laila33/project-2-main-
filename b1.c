@@ -1,154 +1,107 @@
-#include "shell.h"
+#include "shell_.h"
+
+void help_all_func(void);
+void help_alias_func(void);
+void help_cd_func(void);
+void help_exit_func(void);
+void help_help_func(void);
+
 
 /**
- * history_fun - displays the history
- *
- * @info: structure
- *
- * Return: 0
-*/
-
-int history_fun(info_tt *info)
+ * help_all_func -displays a list of internal shell commands and provides instructions on
+ * how to use them.
+ */
+void help_all_func(void)
 {
-	print_node(info->the_history);
-	return (0);
+	char *out_msg = "Shellby\nThese shell commands are defined internally.\n";
+
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "Type 'help' to see this list.\nType 'help name' to find ";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "out more about the function 'name'.\n\n  alias   \t";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "alias [NAME[='VALUE'] ...]\n  cd    \tcd   ";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "[DIRECTORY]\n  exit    \texit [STATUS]\n  env     \tenv";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "\n  setenv  \tsetenv [VARIABLE] [VALUE]\n  unsetenv\t";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "unsetenv [VARIABLE]\n";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
 }
 
+
 /**
- * unsetalias_fun - unset alias to string
- *
- * @info: struct
- * @s: string
- *
- * Return: 0 success 1 if fail
-*/
-
-int unsetalias_fun(info_tt *info, char *s)
+ * help_alias_func - provides information about how to use the "alias" command in C.
+ */
+void help_alias_func(void)
 {
-	char *p, b;
-	int r;
+	char *out_msg = "alias: alias [NAME[='VALUE'] ...]\n\tHandles aliases.\n";
 
-	p = strchr_func2(s, '=');
-	if (!p)
-		return (1);
-	b = *p;
-	*p = 0;
-	r = delete_index(&(info->alias),
-			find_node_index(info->alias, start_node(info->alias, s, -1)));
-	*p = b;
-	return (r);
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "\n\talias: Prints a list of all aliases, one per line, in ";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "the format NAME='VALUE'.\n\talias name [name2 ...]:prints";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = " the aliases name, name2, etc. one per line, in the ";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "form NAME='VALUE'.\n\talias NAME='VALUE' [...]: Defines";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = " an alias for each NAME whose VALUE is given. If NAME ";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "is already an alias, replace its value with VALUE.\n";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
 }
 
+
 /**
- * setalias_fun - set alias to string
- *
- * @v_name: struct
- * @lue: string
- *
- * Return: 0 success 1 if fail
-*/
-
-int setalias_fun(char *v_name, char *lue)
+ * help_cd_func - provides information about the "cd" command in C.
+ */
+void help_cd_func(void)
 {
-	alias_t *temp = aliases;
-	int l, n, x;
-	char *new_lue;
+	char *out_msg = "cd: cd [DIRECTORY]\n\tChanges the current directory of the";
 
-	*lue = '\0';
-	lue++;
-	l = strlen_func(lue) - _strspn(lue, "'\"");
-	new_lue = malloc(sizeof(char) * (l + 1));
-	if (!new_lue)
-		return;
-	for (n = 0, x = 0; lue[n]; n++)
-	{
-		if (lue[n] != '\'' && lue[n] != '"')
-			new_lue[x++] = lue[n];
-	}
-	new_lue[x] = '\0';
-	while (temp)
-	{
-		if (strcmp_func(v_name, temp->name) == 0)
-		{
-			free(temp->lue);
-			temp->lue = new_lue;
-			break;
-		}
-		temp = temp->next;
-	}
-	if (!temp)
-		add_alias_end(&aliases, v_name, new_lue);
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = " process to DIRECTORY.\n\n\tIf no argument is given, the ";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "command is interpreted as cd $HOME. If the argument '-' is";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = " given, the command is interpreted as cd $OLDPWD.\n\n";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "\tThe environment variables PWD and OLDPWD are updated ";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "after a change of directory.\n";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
 }
 
+
 /**
- * printalias_fun - print alias string
- *
- * @alias: alias node
- *
- * Return: 0 success 1 if fail
-*/
-
-int printalias_fun(alias_t *alias)
+ * help_exit_func-  provides information about the "exit" command in a shell.
+ */
+void help_exit_func(void)
 {
-	char *aliasstg;
-	int l = strlen_func(alias->name) + strlen_func(alias->lue) + 4;
+	char *out_msg = "exit: exit [STATUS]\n\tExits the shell.\n\n\tThe ";
 
-	aliassg = malloc(sizeof(char) * (l + 1));
-	if (!aliassg)
-		return;
-	strcpy_func1(aliasstg, alias->name);
-	strcat_func(aliassg, "='");
-	strcat_func(aliassg, alias->lue);
-	strcat_func(aliassg, "'\n");
-
-	write(STDOUT_FILENO, aliassg, l);
-	free(aliassg);
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "STATUS argument is the integer used to exit the shell.";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = " If no argument is given, the command is interpreted as";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = " exit 0.\n";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
 }
 
+
 /**
- * alias_fun - man alias
- *
- * @ar: struct
- * @fr: struct
- *
- * Return: 0
-*/
-
-int alias_fun(char **ar, char **fr)
+ *help_help_func-  displays information about the "help" command in a shell program.
+ */
+void help_help_func(void)
 {
-	alias_t *temp = aliases;
-	int n, rt = 0;
-	char *lue;
+	char *out_msg = "help: help\n\tSee all possible Shellby builtin commands.\n";
 
-	if (!ar[0])
-	{
-		while (temp)
-		{
-			printalias_fun(temp);
-			temp = temp->next;
-		}
-		return (rt);
-	}
-	for (n = 0; ar[n]; n++)
-	{
-		temp = aliases;
-		lue = strchr_func2(ar[n], '=');
-		if (!lue)
-		{
-			while (temp)
-			{
-				if (strcmp_func(ar[n], temp->name) == 0)
-				{
-					printalias_fun(temp);
-					break;
-				}
-				temp = temp->next;
-			}
-			if (!temp)
-				rt = create_error(ar + n, 1);
-		}
-		else
-			setalias_fun(ar[n], lue);
-	}
-	return (rt);
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "\n      help [BUILTIN NAME]\n\tSee specific information on each ";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
+	out_msg = "builtin command.\n";
+	write(STDOUT_FILENO, out_msg, strlen_func(out_msg));
 }
